@@ -1,59 +1,56 @@
 <!-- <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Tools</title>
+  <title>Dark Mode + Timer + Speed</title>
   <style>
     body {
-      background: #1e1e1e;
-      color: white;
       font-family: sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
       padding: 10px;
-      width: 280px;
+      width: 300px;
     }
-    button, select {
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 8px;
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      background: #333;
-      color: white;
-      border: none;
-      cursor: pointer;
+      padding: 6px;
+      font-weight: bold;
     }
-    #speedCanvas {
-      margin-top: 15px;
-      background: #222;
-      border-radius: 8px;
-      padding: 10px;
-    }
-    #status {
-      font-size: 12px;
+    canvas {
+      margin-top: 20px;
+      background-color: #222;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <h3>🌓 Dark Mode + ⏱ Timer + 📶 Speed</h3>
-
   <button id="toggle-dark">Toggle Dark Mode</button>
 
-  <label for="timer">Tab Timer (min):</label>
-  <select id="timer">
-    <option value="0">No timer</option>
-    <option value="5">5</option>
-    <option value="10">10</option>
-    <option value="15">15</option>
+  <label for="theme">Dark Mode Theme:</label>
+  <select id="theme">
+    <option value="dracula">Dracula</option>
+    <option value="nord">Nord</option>
+    <option value="solarized">Solarized Dark</option>
   </select>
+
+  <label>Set Timer:</label>
+  <div style="display:flex; gap:6px;">
+    <input type="number" id="min" placeholder="min" min="0" style="width: 50%;">
+    <input type="number" id="sec" placeholder="sec" min="0" style="width: 50%;">
+  </div>
   <button id="start-timer">Start Timer</button>
   <p id="status"></p>
 
-  <h4>📶 Speed Monitor</h4>
-  <canvas id="speedChart" width="250" height="120"></canvas>
+  <canvas id="speedChart" width="270" height="150"></canvas>
 
   <script src="libs/chart.min.js"></script>
   <script src="popup.js"></script>
 </body>
 </html> -->
-
 
 <!DOCTYPE html>
 <html>
@@ -103,6 +100,7 @@
   <p id="status"></p>
 
   <canvas id="speedChart" width="270" height="150"></canvas>
+  <button id="export-log">Export Speed Log</button>
 
   <script src="libs/chart.min.js"></script>
   <script src="popup.js"></script>
