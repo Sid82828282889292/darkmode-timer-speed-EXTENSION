@@ -7,6 +7,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         target: { tabId },
         func: () => {
           alert("⏰ Your time is up!");
+
+          const audio = new Audio(chrome.runtime.getURL("icons/alarm.mp3"));
+          audio.play();
         }
       });
 
