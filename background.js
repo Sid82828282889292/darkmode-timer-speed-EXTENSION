@@ -1,24 +1,36 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "START_TIMER") {
-    const { tabId, duration } = message;
+    const tabId = message.tabId;
+    const duration = message.duration;
 
-    setTimeout(() => {
-      chrome.scripting.executeScript({
-        target: { tabId },
-        func: () => {
-          alert("⏰ Your time is up!");
+    chrome.storage.local.set({ timerTabId: tabId });
 
-          const audio = new Audio(chrome.runtime.getURL("icons/alarm.mp3"));
-          audio.play();
-        }
-      });
+    chrome.alarms.create("tab_timer", {
+      delayInMinutes: duration / 60000
+    });
+  }
+});
 
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icons/icon.png",
-        title: "Tab Timer Alert",
-        message: "⏳ Your time is up!"
-      });
-    }, duration);
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === "tab_timer") {
+    chrome.storage.local.get("timerTabId", ({ timerTabId }) => {
+      if (timerTabId) {
+        chrome.scripting.executeScript({
+          target: { tabId: timerTabId },
+          func: () => {
+            alert("⏰ Time's up!");
+            const audio = new Audio(chrome.runtime.getURL("icons/alarm.mp3"));
+            audio.play();
+          }
+        });
+
+        chrome.notifications.create({
+          type: "basic",
+          iconUrl: "icons/icon.png",
+          title: "Tab Timer Alert",
+          message: "⏳ Your time is up!"
+        });
+      }
+    });
   }
 });
