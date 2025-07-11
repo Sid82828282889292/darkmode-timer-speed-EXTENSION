@@ -1,36 +1,38 @@
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "START_TIMER") {
-    const tabId = message.tabId;
     const duration = message.duration;
+    console.log("[TIMER] Starting timer for", duration, "ms");
 
-    chrome.storage.local.set({ timerTabId: tabId });
-
-    chrome.alarms.create("tab_timer", {
-      delayInMinutes: duration / 60000
+    chrome.alarms.clear("tab_timer", () => {
+      chrome.alarms.create("tab_timer", {
+        when: Date.now() + duration
+      });
+      console.log("[TIMER] Alarm set to fire in", duration / 1000, "seconds");
     });
   }
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "tab_timer") {
-    chrome.storage.local.get("timerTabId", ({ timerTabId }) => {
-      if (timerTabId) {
-        chrome.scripting.executeScript({
-          target: { tabId: timerTabId },
-          func: () => {
-            alert("⏰ Time's up!");
-            const audio = new Audio(chrome.runtime.getURL("icons/alarm.mp3"));
-            audio.play();
-          }
-        });
+    console.log("[TIMER] Alarm triggered");
 
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: "icons/icon.png",
-          title: "Tab Timer Alert",
-          message: "⏳ Your time is up!"
-        });
+    // Show Notification
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icons/icon.png",
+      title: "Timer Alert",
+      message: "⏰ Your timer is up!"
+    }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("[NOTIFICATION ERROR]", chrome.runtime.lastError.message);
+      } else {
+        console.log("[NOTIFICATION] Timer alert shown");
       }
+    });
+
+    // Open a tab to play sound (bypasses autoplay restrictions)
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("alarm.html")
     });
   }
 });
